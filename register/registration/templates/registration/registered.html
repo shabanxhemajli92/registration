@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registered Entries</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #004990;
+    }
+    
+    p {
+      margin-bottom: 10px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Registered Entries</h1>
+
+  {% for entry in object_list %}
+    <p><strong>Full Name:</strong> {{ entry.full_name }}<br>
+       <strong>Phone Number:</strong> {{ entry.phone_number }}<br>
+       <strong>Identification Number:</strong> {{ entry.id_number }}</p>
+  {% empty %}
+    <p>No entries yet.</p>
+  {% endfor %}
+</body>
+</html>
