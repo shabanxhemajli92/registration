@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Appointment Center</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #004990;
+    }
+    
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    li {
+      margin-bottom: 10px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    
+    a {
+      display: inline-block;
+      background-color: #004990;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    a:hover {
+      background-color: #00316b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the Appointment Center</h1>
+
+  <ul>
+    <li><a href="{% url 'registration' %}">Register</a></li>
+    <li><a href="{% url 'registration_list' %}">Registration List</a></li>
+    <li><a href="{% url 'about' %}">About</a></li>
+  </ul>
+</body>
+</html>
