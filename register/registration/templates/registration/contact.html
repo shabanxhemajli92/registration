@@ -1,3 +1,4 @@
+<h1>Contact Us</h1>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -48,8 +49,8 @@
     background-color: #45a049;
   }
 </style>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
