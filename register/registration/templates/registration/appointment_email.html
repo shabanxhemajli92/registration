@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Appointment Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #2E3B4D;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: bold;
+      color: #2E3B4D;
+    }
+    p {
+      margin-bottom: 1em;
+    }
+    ul {
+      margin-bottom: 1em;
+      padding-left: 0;
+      list-style: none;
+    }
+    li {
+      margin-bottom: 0.5em;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 0;
+      color: #2E3B4D;
+      text-transform: uppercase;
+    }
+    .content {
+      margin-bottom: 2em;
+      background-color: #F0F3F5;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .content p:first-of-type {
+      margin-top: 0;
+    }
+    .content p:last-of-type {
+      margin-bottom: 0;
+    }
+    .signature {
+      text-align: right;
+      margin-top: 2em;
+      color: #2E3B4D;
+    }
+    .signature p {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Appointment Confirmation</h1>
+  </div>
+  <div class="content">
+    <p>Dear {{ appointment.name }},</p>
+    <p>Thank you for scheduling an appointment with us. Here are the details of your appointment:</p>
+    <ul>
+      <li>Date: {{ appointment.date }}</li>
+      <li>Time: {{ appointment.time }}</li>
+      <li>Location: {{ appointment.location }}</li>
+    </ul>
+    <p>Please find attached a PDF confirmation of your appointment.</p>
+  </div>
+  <div class="signature">
+    <p>Best regards,</p>
+    <p>The Appointment Team</p>
+  </div>
+</body>
+</html>

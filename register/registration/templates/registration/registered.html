@@ -18,10 +18,34 @@
       font-size: 16px;
       line-height: 1.4;
     }
+    
+    input[type="text"] {
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      width: 200px;
+    }
+    
+    input[type="submit"] {
+      padding: 5px 10px;
+      background-color: #004990;
+      color: #fff;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>Registered Entries</h1>
+  
+  <form method="GET" action="/">
+    <label for="id_number">Filter by ID Number:</label>
+    <input type="text" name="id_number" id="id_number">
+    <input type="submit" value="Filter">
+  </form>
 
   {% for entry in object_list %}
     <p><strong>Full Name:</strong> {{ entry.full_name }}<br>
@@ -32,3 +56,9 @@
   {% endfor %}
 </body>
 </html>
+
+
+
+
+
+

@@ -1,9 +1,14 @@
 from django.views.generic import ListView,FormView,TemplateView,ListView
 from django.urls import reverse_lazy
-from .forms import RegistrationForm,ContactForm,LoginForm
-from .models import Registration
+from .forms import RegistrationForm,ContactForm,LoginForm,AppointmentForm
+from django.views.generic import CreateView,ListView
+from .models import Registration,Complaint,Appointment
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail,EmailMessage
+from django.template.loader import render_to_string
+from django.shortcuts import render
+from .utils import create_pdf
+
 
 
 
@@ -55,3 +60,36 @@ class MyLogoutView(TemplateView):
     success_url = reverse_lazy('login')        
 
 
+class ComplaintCreateView(CreateView):
+    model = Complaint
+    fields = ['name', 'appointment_type','description']
+    success_url = reverse_lazy('complaint-list')
+    template_name = 'registration/complaint_form.html'
+
+class ComplaintListView(ListView):
+    model = Complaint
+    template_name = 'registration/complaint_list.html'
+
+class AppointmentCreateView(CreateView):
+    model = Appointment
+    fields = ['name', 'email', 'date', 'time', 'location']
+    template_name = 'registration/appointment_form.html'
+    success_url = reverse_lazy('appointment_success')
+
+    def send_email(self):
+        appointment = self.object
+        pdf = create_pdf(appointment)
+        subject = 'Appointment Confirmation'
+        message = render_to_string('registration/appointment_email.html', {'appointment': appointment})
+        email = EmailMessage(subject, message, to=[appointment.email])
+        email.content_subtype = 'html' 
+        email.attach(f'{appointment.name}.pdf', pdf.getvalue(), 'application/pdf')
+        email.send()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.send_email()
+        return response
+
+def success_view(request):
+    return render(request, 'registration/appointment_success.html')
