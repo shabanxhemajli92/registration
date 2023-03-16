@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 class Registration(models.Model):
     full_name=models.CharField(max_length=100)
@@ -33,6 +35,7 @@ class Appointment(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=255)
     
+  
     
     def __str__(self):
         return self.name

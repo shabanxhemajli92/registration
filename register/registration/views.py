@@ -2,13 +2,11 @@ from django.views.generic import ListView,FormView,TemplateView,ListView
 from django.urls import reverse_lazy
 from .forms import RegistrationForm,ContactForm,LoginForm,AppointmentForm
 from django.views.generic import CreateView,ListView
-from .models import Registration,Complaint,Appointment
+from .models import Registration,Complaint
 from django.conf import settings
 from django.core.mail import send_mail,EmailMessage
-from django.template.loader import render_to_string
-from django.shortcuts import render
-from .utils import create_pdf
-
+from io import BytesIO
+from reportlab.pdfgen import canvas
 
 
 
@@ -70,26 +68,45 @@ class ComplaintListView(ListView):
     model = Complaint
     template_name = 'registration/complaint_list.html'
 
-class AppointmentCreateView(CreateView):
-    model = Appointment
-    fields = ['name', 'email', 'date', 'time', 'location']
+class AppointmentFormView(FormView):
+    form_class = AppointmentForm
     template_name = 'registration/appointment_form.html'
     success_url = reverse_lazy('appointment_success')
 
-    def send_email(self):
-        appointment = self.object
-        pdf = create_pdf(appointment)
+    def form_valid(self, form):
+        appointment = form.save(commit=False)
+        pdf_buffer = create_pdf(appointment)
         subject = 'Appointment Confirmation'
-        message = render_to_string('registration/appointment_email.html', {'appointment': appointment})
-        email = EmailMessage(subject, message, to=[appointment.email])
-        email.content_subtype = 'html' 
-        email.attach(f'{appointment.name}.pdf', pdf.getvalue(), 'application/pdf')
+        message = 'Please find attached the details of your appointment.'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = appointment.email
+
+        email = EmailMessage(
+            subject,
+            message,
+            from_email,
+            [to_email],
+            reply_to=[from_email],
+        )
+        email.content_subtype = 'html'
+        email.attach('appointment.pdf', pdf_buffer.getvalue(), 'application/pdf')
         email.send()
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        self.send_email()
-        return response
+        appointment.save()
+        return super().form_valid(form)
 
-def success_view(request):
-    return render(request, 'registration/appointment_success.html')
+
+def create_pdf(appointment):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 750, f"Appointment Confirmation for {appointment.name}")
+    p.drawString(100, 700, f"Date: {appointment.date}")
+    p.drawString(100, 650, f"Time: {appointment.time}")
+    p.drawString(100, 600, f"Location: {appointment.location}")
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return buffer
+        
+class SuccessView(TemplateView):
+    template_name = 'registration/appointment_success.html'
