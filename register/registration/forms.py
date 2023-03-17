@@ -1,5 +1,6 @@
 from django import forms
 from .models import Registration,Complaint,Appointment
+from .tasks import email_task
 
 
 
@@ -31,6 +32,9 @@ class AppointmentForm(forms.ModelForm):
         model = Appointment
         fields = ('name', 'email', 'date', 'time', 'location')
 
+    def send_email_delay(self):
+        email_task.delay(
+            self.cleaned_data['name'], self.cleaned_data['email'], self.cleaned_data['date'],self.cleaned_data['time'],self.cleaned_data['location'])
 
         
 

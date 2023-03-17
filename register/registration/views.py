@@ -4,9 +4,12 @@ from .forms import RegistrationForm,ContactForm,LoginForm,AppointmentForm
 from django.views.generic import CreateView,ListView
 from .models import Registration,Complaint
 from django.conf import settings
-from django.core.mail import send_mail,EmailMessage
-from io import BytesIO
-from reportlab.pdfgen import canvas
+from django.core.mail import send_mail
+from .tasks import email_task
+
+
+
+
 
 
 
@@ -74,39 +77,11 @@ class AppointmentFormView(FormView):
     success_url = reverse_lazy('appointment_success')
 
     def form_valid(self, form):
-        appointment = form.save(commit=False)
-        pdf_buffer = create_pdf(appointment)
-        subject = 'Appointment Confirmation'
-        message = 'Please find attached the details of your appointment.'
-        from_email = settings.DEFAULT_FROM_EMAIL
-        to_email = appointment.email
-
-        email = EmailMessage(
-            subject,
-            message,
-            from_email,
-            [to_email],
-            reply_to=[from_email],
-        )
-        email.content_subtype = 'html'
-        email.attach('appointment.pdf', pdf_buffer.getvalue(), 'application/pdf')
-        email.send()
-
+        appointment = form.save(commit=True)
         appointment.save()
+        email_task.apply_async(args=[appointment.pk], countdown=4)
         return super().form_valid(form)
 
 
-def create_pdf(appointment):
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer)
-    p.drawString(100, 750, f"Appointment Confirmation for {appointment.name}")
-    p.drawString(100, 700, f"Date: {appointment.date}")
-    p.drawString(100, 650, f"Time: {appointment.time}")
-    p.drawString(100, 600, f"Location: {appointment.location}")
-    p.showPage()
-    p.save()
-    buffer.seek(0)
-    return buffer
-        
 class SuccessView(TemplateView):
     template_name = 'registration/appointment_success.html'
