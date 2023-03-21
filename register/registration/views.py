@@ -9,11 +9,6 @@ from .tasks import email_task
 
 
 
-
-
-
-
-
 class LoginView(FormView):
     form_class=LoginForm
     template_name="registration/login.html"
